@@ -1,0 +1,459 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#0b5c46">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>Islamic Center Registration</title>
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" href="/icon.svg" type="image/svg+xml">
+<style>
+  :root{
+    --green:#0b5c46;
+    --green-soft:#e8f2ee;
+    --gold:#b98b3a;
+    --ink:#132a24;
+    --muted:#7d8c86;
+    --line:#e3e8e5;
+    --bg:#f6f8f7;
+    --surface:#ffffff;
+    --shadow:0 1px 2px rgba(19,42,36,.05), 0 8px 24px rgba(19,42,36,.06);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font:16px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:620px;margin:0 auto;min-height:100dvh;display:flex;flex-direction:column;background:var(--surface);
+    padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+  @media(min-width:700px){
+    body{background:var(--bg)}
+    .wrap{margin:32px auto;min-height:auto;border-radius:22px;box-shadow:var(--shadow);overflow:hidden}
+  }
+
+  /* ---- header ---- */
+  .top{padding:14px 20px 0;background:var(--surface)}
+  .bar{height:4px;border-radius:99px;background:var(--line);overflow:hidden}
+  .bar i{display:block;height:100%;width:0;background:var(--green);border-radius:99px;transition:width .28s ease}
+  .meta{display:flex;justify-content:space-between;align-items:center;padding:10px 0 0;font-size:13px;color:var(--muted);min-height:20px}
+  .meta b{color:var(--green);font-weight:600}
+  .back{border:0;background:none;color:var(--muted);font:inherit;font-size:13px;padding:8px 0;cursor:pointer;display:none}
+  .back.on{display:block}
+  .back:active{opacity:.5}
+
+  /* ---- body ---- */
+  main{flex:1;padding:18px 20px 24px}
+  h1{font-size:27px;line-height:1.25;margin:6px 0 8px;font-weight:700;letter-spacing:-.2px}
+  h2{font-size:22px;line-height:1.3;margin:4px 0 6px;font-weight:700;letter-spacing:-.2px}
+  p.lead{margin:0 0 20px;color:var(--muted);font-size:16px}
+  .q{font-size:17px;font-weight:600;margin:0 0 6px}
+  .hint{font-size:13px;color:var(--muted);margin:0 0 14px}
+  .note{font-size:13px;color:var(--muted);margin:12px 0 0}
+  .foot-note{margin-top:auto;padding:22px 0 0;font-size:13px;color:var(--muted);text-align:center}
+
+  /* ---- inputs ---- */
+  label.f{display:block;font-size:14px;color:var(--muted);margin:16px 0 6px;font-weight:500}
+  label.f span{color:#b3863a}
+  input[type=text],input[type=tel],input[type=email],input[type=number],textarea{
+    width:100%;padding:16px;font:inherit;font-size:17px;color:var(--ink);background:#fff;
+    border:1.5px solid var(--line);border-radius:14px;outline:none;appearance:none}
+  textarea{min-height:130px;resize:vertical;line-height:1.5}
+  input:focus,textarea:focus{border-color:var(--green);box-shadow:0 0 0 4px var(--green-soft)}
+  input.err,textarea.err{border-color:#c0392b;box-shadow:0 0 0 4px #fbeae8}
+
+  /* ---- options ---- */
+  .opts{display:flex;flex-direction:column;gap:10px;margin:6px 0 0}
+  .opt{
+    display:flex;align-items:center;gap:12px;width:100%;text-align:left;
+    padding:17px 16px;font:inherit;font-size:17px;font-weight:500;color:var(--ink);
+    background:#fff;border:1.5px solid var(--line);border-radius:14px;cursor:pointer}
+  .opt .tick{width:22px;height:22px;flex:0 0 22px;border-radius:50%;border:1.5px solid #cfd8d4;
+    display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;line-height:1}
+  .opt .tick svg{width:13px;height:13px;display:none}
+  .opt[aria-pressed=true],.opt.sel{background:var(--green);border-color:var(--green);color:#fff;font-weight:600}
+  .opt[aria-pressed=true] .tick,.opt.sel .tick{background:#fff;border-color:#fff;color:var(--green)}
+  .opt[aria-pressed=true] .tick svg,.opt.sel .tick svg{display:block;stroke:var(--green)}
+  .opt[disabled]{opacity:.45}
+  .opt:active{transform:scale(.995)}
+
+  /* ---- footer ---- */
+  footer{padding:14px 20px calc(18px + env(safe-area-inset-bottom));background:var(--surface);
+    border-top:1px solid var(--line);position:sticky;bottom:0}
+  .btn{width:100%;padding:18px;font:inherit;font-size:17px;font-weight:600;color:#fff;background:var(--green);
+    border:0;border-radius:15px;cursor:pointer;letter-spacing:.2px}
+  .btn:active{background:#0a4d3b}
+  .btn[disabled]{opacity:.4}
+  .btn.ghost{background:#fff;color:var(--green);border:1.5px solid var(--green)}
+  .support{margin-top:12px;text-align:center;font-size:14px;color:var(--muted)}
+  .support b{color:var(--green);font-weight:600;font-variant-numeric:tabular-nums}
+
+  .toast{position:fixed;left:50%;bottom:96px;transform:translate(-50%,10px);background:#132a24;color:#fff;
+    padding:11px 16px;border-radius:12px;font-size:14px;opacity:0;pointer-events:none;transition:.2s;z-index:9;max-width:88vw;text-align:center}
+  .toast.on{opacity:1;transform:translate(-50%,0)}
+
+  .center{text-align:center}
+  .done-mark{width:70px;height:70px;border-radius:50%;background:var(--green-soft);display:flex;align-items:center;
+    justify-content:center;margin:14px auto 6px}
+  .done-mark svg{width:34px;height:34px;stroke:var(--green)}
+  .spinner{width:22px;height:22px;border-radius:50%;border:2.5px solid rgba(255,255,255,.4);border-top-color:#fff;
+    display:inline-block;vertical-align:-3px;animation:sp .7s linear infinite}
+  @keyframes sp{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div class="bar"><i id="bar"></i></div>
+    <div class="meta">
+      <button class="back" id="back">&#8592; Back</button>
+      <span id="step"></span>
+    </div>
+  </div>
+
+  <main id="main"></main>
+
+  <footer>
+    <button class="btn" id="next">Continue</button>
+    <div class="support" id="sup"></div>
+  </footer>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const SUPPORT = "089516841713";
+const TICK = '<span class="tick"><svg viewBox="0 0 24 24" fill="none" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg></span>';
+
+/* ---------- state ---------- */
+const KEY = "icr.v1";
+const blank = () => ({
+  center:{name:"",location:"",students:"",teachers:"",living:""},
+  features:[], parents:[], teachers:[], otherSystem:"",
+  help:{website:"",difficulty:""},
+  contact:{name:"",role:"",roleOther:"",whatsapp:"",email:""},
+  survey:{q1:"",q2:"",q3:"",q4:[],q5:[],q6:"",q7:"",q8:"",q9:"",q10:""}
+});
+let S = blank();
+try{ const raw=localStorage.getItem(KEY); if(raw){ const p=JSON.parse(raw); S=Object.assign(blank(),p,
+  {center:Object.assign(blank().center,p.center||{}),help:Object.assign(blank().help,p.help||{}),
+   contact:Object.assign(blank().contact,p.contact||{}),survey:Object.assign(blank().survey,p.survey||{})}); } }catch(e){}
+const save = () => { try{ localStorage.setItem(KEY,JSON.stringify(S)); }catch(e){} };
+
+/* ---------- option sets ---------- */
+const OPTS = {
+  living:["Yes, all","Yes, some","No"],
+  features:["Student management","Attendance","Quran memorization","Quran revision","Prayer tracking","Grades / evaluations","Teacher management","Parent portal","Payments","Dorm management","Scheduling","Reports","Announcements","Homework","Leave requests","Other"],
+  parents:["View their child's progress","View attendance","View Quran progress","View prayer attendance","View grades","Read teacher comments","Receive reports","Receive announcements","Contact teachers","Submit leave requests","Other"],
+  teachers:["Record attendance","Record Quran progress","Record revision","Add grades","Add comments","Add homework","View student information","View their lessons","Other"],
+  roles:["Director","Administrator","Teacher","Other"],
+  q1:["Paper","WhatsApp","Excel / Google Sheets","Another system","We don't track it"],
+  q2:["Paper","WhatsApp","Excel / Google Sheets","Another system","We don't record it regularly"],
+  q3:["WhatsApp","Phone calls","Parent meetings","Paper reports","No regular updates","Other"],
+  q4:["Lesson attendance","Quran memorization","Quran revision","Prayer attendance","Grades","Teacher comments","Homework","Monthly reports","Other"],
+  q5:["Attendance","Student records","Quran tracking","Parent communication","Reports","Payments","Dorm management","Scheduling","Other"],
+  q6:["1\u20132","3\u20134","5\u20136","7+"],
+  q7:["Yes","No","Sometimes"],
+  q8:["Yes","Sometimes","No"],
+  q10:["Under Rp250,000","Rp250,000\u2013500,000","Rp500,000\u20131,000,000","Rp1,000,000\u20132,000,000","Rp2,000,000+","We would need to discuss it"]
+};
+
+/* ---------- steps ---------- */
+const STEPS = [
+  {id:"welcome", stage:"Welcome", pos:"1 / 6"},
+  {id:"center", stage:"Your Center", pos:"2 / 6"},
+  {id:"features", stage:"Your System", pos:"1 / 4"},
+  {id:"parents", stage:"Your System", pos:"2 / 4"},
+  {id:"teachers", stage:"Your System", pos:"3 / 4"},
+  {id:"other", stage:"Your System", pos:"4 / 4"},
+  {id:"help1", stage:"How Can We Help?", pos:"1 / 2"},
+  {id:"help2", stage:"How Can We Help?", pos:"2 / 2"},
+  {id:"contact", stage:"Your Contact", pos:"5 / 6"},
+  {id:"q1",stage:"Survey",pos:"1 / 10"},{id:"q2",stage:"Survey",pos:"2 / 10"},{id:"q3",stage:"Survey",pos:"3 / 10"},
+  {id:"q4",stage:"Survey",pos:"4 / 10"},{id:"q5",stage:"Survey",pos:"5 / 10"},{id:"q6",stage:"Survey",pos:"6 / 10"},
+  {id:"q7",stage:"Survey",pos:"7 / 10"},{id:"q8",stage:"Survey",pos:"8 / 10"},{id:"q9",stage:"Survey",pos:"9 / 10"},
+  {id:"q10", stage:"Survey", pos:"10 / 10"},
+  {id:"submit", stage:"Submit", pos:"6 / 6"},
+  {id:"thanks", stage:"", pos:""}
+];
+let i = 0;
+const main=document.getElementById("main"), nextBtn=document.getElementById("next"),
+      backBtn=document.getElementById("back"), bar=document.getElementById("bar"),
+      stepEl=document.getElementById("step"), supEl=document.getElementById("sup"), toastEl=document.getElementById("toast");
+
+const esc = s => String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const show = (m,ms=1400)=>{ toastEl.textContent=m; toastEl.classList.add("on"); clearTimeout(show.t);
+  show.t=setTimeout(()=>toastEl.classList.remove("on"),ms); };
+
+function fieldErr(el){ el.classList.add("err"); el.focus(); }
+
+function optsHTML(set, selFn, pressed){
+  return OPTS[set].map(v=>`<button type="button" class="opt" data-v="${esc(v)}" aria-pressed="${pressed(v)?'true':'false'}">${TICK}<span>${esc(v)}</span></button>`).join("");
+}
+function bindOpts(single, get, set){
+  main.querySelectorAll(".opt").forEach(el=>el.addEventListener("click",()=>{
+    const v = el.dataset.v;
+    set(v, el);
+  }));
+}
+function markAll(sel){
+  main.querySelectorAll(".opt").forEach(el=>el.setAttribute("aria-pressed", sel.includes(el.dataset.v)?"true":"false"));
+}
+
+/* ---------- render ---------- */
+function render(){
+  const st = STEPS[i];
+  bar.style.width = Math.round(((i)/(STEPS.length-1))*100)+"%";
+  stepEl.innerHTML = (i===0 || st.id==="thanks") ? "" : `${esc(st.stage)} &middot; <b>${esc(st.pos)}</b>`;
+  backBtn.classList.toggle("on", i>0 && !sending && st.id!=="submit" && st.id!=="thanks");
+  supEl.innerHTML = (st.id==="welcome"||st.id==="thanks"||st.id==="submit") ? `Support: <b>${SUPPORT}</b>` : "";
+  nextBtn.style.display = st.id==="thanks" ? "none" : "block";
+  nextBtn.disabled = sending;
+  nextBtn.innerHTML = sending ? '<span class="spinner"></span>'
+    : (st.id==="welcome" ? "Start" : st.id==="submit" ? "Submit" : "Continue");
+
+  switch(st.id){
+    case "welcome":
+      main.innerHTML = `<h1>Islamic Center Registration</h1>
+        <p class="lead">Tell us about your center and the system you need.</p>
+        <div class="foot-note">Support: <b>${SUPPORT}</b></div>`;
+      break;
+
+    case "center":
+      main.innerHTML = `<h2>Your Center</h2>
+        <label class="f">Center name <span>*</span></label>
+        <input type="text" id="f_name" value="${esc(S.center.name)}" placeholder="Center name" autocomplete="organization">
+        <label class="f">Location / City <span>*</span></label>
+        <input type="text" id="f_loc" value="${esc(S.center.location)}" placeholder="City">
+        <label class="f">Number of students <span>*</span></label>
+        <input type="number" inputmode="numeric" id="f_stu" value="${esc(S.center.students)}" placeholder="0">
+        <label class="f">Number of teachers <span>*</span></label>
+        <input type="number" inputmode="numeric" id="f_tea" value="${esc(S.center.teachers)}" placeholder="0">
+        <p class="q" style="margin-top:22px">Do students live at the center? <span style="color:#b3863a">*</span></p>
+        <div class="opts" id="living">${optsHTML("living",null,v=>S.center.living===v)}</div>`;
+      main.querySelectorAll("#living .opt").forEach(el=>el.addEventListener("click",()=>{
+        S.center.living = el.dataset.v; save(); markAll([S.center.living]); markAllScope("#living",[S.center.living]);
+      }));
+      break;
+
+    case "features": case "parents": case "teachers": {
+      const map = {features:["Your System","What would you like your system to include?",S.features],
+                   parents:  ["Your System","How would you like parents to use the system?",S.parents],
+                   teachers: ["Your System","How would you like teachers to use the system?",S.teachers]};
+      const [title,q,arr] = map[st.id];
+      main.innerHTML = `<h2>${title}</h2><p class="lead">${q}</p>
+        <div class="opts" id="grp">${optsHTML(st.id,null,v=>arr.includes(v))}</div>`;
+      main.querySelectorAll("#grp .opt").forEach(el=>el.addEventListener("click",()=>{
+        const v=el.dataset.v, k=arr.indexOf(v);
+        if(k>-1) arr.splice(k,1); else arr.push(v);
+        save(); el.setAttribute("aria-pressed", k>-1?"false":"true");
+      }));
+      break;
+    }
+
+    case "other":
+      main.innerHTML = `<h2>Your System</h2>
+        <p class="q">What else would you want your system to have?</p>
+        <p class="hint">Optional</p>
+        <textarea id="f_other" placeholder="Write anything else...">${esc(S.otherSystem)}</textarea>`;
+      break;
+
+    case "help1":
+      main.innerHTML = `<h2>How Can We Help?</h2>
+        <p class="q">How do you think a website could help your center? <span style="color:#b3863a">*</span></p>
+        <textarea id="f_h1" placeholder="Write your answer...">${esc(S.help.website)}</textarea>`;
+      break;
+
+    case "help2":
+      main.innerHTML = `<h2>How Can We Help?</h2>
+        <p class="q">What makes managing your center online the most difficult? <span style="color:#b3863a">*</span></p>
+        <textarea id="f_h2" placeholder="Write your answer...">${esc(S.help.difficulty)}</textarea>`;
+      break;
+
+    case "contact":
+      main.innerHTML = `<h2>Your Contact</h2>
+        <label class="f">Your name <span>*</span></label>
+        <input type="text" id="f_cn" value="${esc(S.contact.name)}" placeholder="Full name" autocomplete="name">
+        <p class="q" style="margin-top:20px">Position / Role <span style="color:#b3863a">*</span></p>
+        <div class="opts" id="role">${optsHTML("roles",null,v=>S.contact.role===v)}</div>
+        <div id="roleOtherBox" style="display:${S.contact.role==="Other"?"block":"none"}">
+          <label class="f">Your position</label>
+          <input type="text" id="f_role_other" value="${esc(S.contact.roleOther)}" placeholder="Position">
+        </div>
+        <label class="f">WhatsApp number <span>*</span></label>
+        <input type="tel" inputmode="tel" id="f_wa" value="${esc(S.contact.whatsapp)}" placeholder="08xx xxxx xxxx">
+        <label class="f">Email</label>
+        <input type="email" inputmode="email" id="f_em" value="${esc(S.contact.email)}" placeholder="Optional" autocomplete="email">
+        <p class="hint" style="margin-top:8px">Email is optional.</p>`;
+      main.querySelectorAll("#role .opt").forEach(el=>el.addEventListener("click",()=>{
+        S.contact.role = el.dataset.v; save(); markAllScope("#role",[S.contact.role]);
+        document.getElementById("roleOtherBox").style.display = S.contact.role==="Other"?"block":"none";
+      }));
+      break;
+
+    case "q1": case "q2": case "q3": case "q6": case "q7": case "q8": case "q10": {
+      const texts = {
+        q1:"How do you currently record attendance?",
+        q2:"How do teachers record student progress and comments?",
+        q3:"How do parents receive information about their children?",
+        q6:"How many lessons does a student usually have each day?",
+        q7:"Do teachers need to record attendance for each lesson?",
+        q8:"Do you currently give parents regular student reports?",
+        q10:"What monthly budget would your center be comfortable paying?"
+      };
+      main.innerHTML = `<p class="q">${texts[st.id]}</p>
+        <div class="opts" id="grp">${optsHTML(st.id,null,v=>S.survey[st.id]===v)}</div>
+        ${st.id==="q10" ? '<p class="note">This helps us understand what is realistic for your center.</p>' : ""}`;
+      main.querySelectorAll("#grp .opt").forEach(el=>el.addEventListener("click",()=>{
+        S.survey[st.id]=el.dataset.v; save(); markAllScope("#grp",[el.dataset.v]);
+      }));
+      break;
+    }
+
+    case "q4":
+      main.innerHTML = `<p class="q">What would you like parents to see?</p>
+        <p class="hint">You can choose more than one.</p>
+        <div class="opts" id="grp">${optsHTML("q4",null,v=>S.survey.q4.includes(v))}</div>`;
+      main.querySelectorAll("#grp .opt").forEach(el=>el.addEventListener("click",()=>{
+        const v=el.dataset.v, k=S.survey.q4.indexOf(v);
+        if(k>-1) S.survey.q4.splice(k,1); else S.survey.q4.push(v);
+        save(); el.setAttribute("aria-pressed",k>-1?"false":"true");
+      }));
+      break;
+
+    case "q5":
+      main.innerHTML = `<p class="q">What takes the most time for your administration?</p>
+        <p class="hint">Choose up to 3. <span id="cnt">(${S.survey.q5.length} of 3)</span></p>
+        <div class="opts" id="grp">${optsHTML("q5",null,v=>S.survey.q5.includes(v))}</div>`;
+      main.querySelectorAll("#grp .opt").forEach(el=>el.addEventListener("click",()=>{
+        const v=el.dataset.v, arr=S.survey.q5, k=arr.indexOf(v);
+        if(k>-1) arr.splice(k,1);
+        else { if(arr.length>=3){ show("You can choose up to 3"); return; } arr.push(v); }
+        save(); el.setAttribute("aria-pressed",k>-1?"false":"true");
+        document.getElementById("cnt").textContent = `(${arr.length} of 3)`;
+      }));
+      break;
+
+    case "q9":
+      main.innerHTML = `<p class="q">What is the biggest problem you want a system to solve? <span style="color:#b3863a">*</span></p>
+        <textarea id="f_q9" placeholder="Write your answer...">${esc(S.survey.q9)}</textarea>`;
+      break;
+
+    case "submit":
+      main.innerHTML = `<h2>You're Done</h2>
+        <p class="lead">Thank you for your time.</p>`;
+      break;
+
+    case "thanks":
+      main.innerHTML = `<div class="center">
+        <div class="done-mark"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg></div>
+        <h2>Thank you!</h2>
+        <p class="lead">We will contact you soon.</p>
+        <p style="color:var(--muted);font-size:14px">Support: <b style="color:var(--green)">${SUPPORT}</b></p>
+      </div>`;
+      break;
+  }
+  window.scrollTo(0,0);
+}
+function markAllScope(sel, values){
+  main.querySelectorAll(sel+" .opt").forEach(el=>el.setAttribute("aria-pressed", values.includes(el.dataset.v)?"true":"false"));
+}
+
+/* ---------- collecting ---------- */
+function collect(){
+  const st=STEPS[i];
+  switch(st.id){
+    case "center":
+      S.center.name = main.querySelector("#f_name").value.trim();
+      S.center.location = main.querySelector("#f_loc").value.trim();
+      S.center.students = main.querySelector("#f_stu").value.replace(/[^\d]/g,"");
+      S.center.teachers = main.querySelector("#f_tea").value.replace(/[^\d]/g,"");
+      break;
+    case "other": S.otherSystem = main.querySelector("#f_other").value.trim(); break;
+    case "help1": S.help.website = main.querySelector("#f_h1").value.trim(); break;
+    case "help2": S.help.difficulty = main.querySelector("#f_h2").value.trim(); break;
+    case "contact":
+      S.contact.name = main.querySelector("#f_cn").value.trim();
+      S.contact.whatsapp = main.querySelector("#f_wa").value.trim();
+      S.contact.email = main.querySelector("#f_em").value.trim();
+      const ro = main.querySelector("#f_role_other");
+      if(ro) S.contact.roleOther = ro.value.trim();
+      break;
+    case "q9": S.survey.q9 = main.querySelector("#f_q9").value.trim(); break;
+  }
+  save();
+}
+function missing(){
+  const st=STEPS[i], need=[];
+  switch(st.id){
+    case "center":
+      if(!S.center.name) need.push(["#f_name",null]);
+      if(!S.center.location) need.push(["#f_loc",null]);
+      if(!S.center.students) need.push(["#f_stu",null]);
+      if(!S.center.teachers) need.push(["#f_tea",null]);
+      if(!S.center.living) need.push([null,"Do students live at the center?"]);
+      break;
+    case "features": if(!S.features.length) need.push([null,"Choose at least one."]); break;
+    case "parents": if(!S.parents.length) need.push([null,"Choose at least one."]); break;
+    case "teachers": if(!S.teachers.length) need.push([null,"Choose at least one."]); break;
+    case "help1": if(!S.help.website) need.push(["#f_h1",null]); break;
+    case "help2": if(!S.help.difficulty) need.push(["#f_h2",null]); break;
+    case "contact":
+      if(!S.contact.name) need.push(["#f_cn",null]);
+      if(!S.contact.role) need.push([null,"Choose your position."]);
+      if(S.contact.role==="Other" && !S.contact.roleOther) need.push(["#f_role_other",null]);
+      if(!S.contact.whatsapp) need.push(["#f_wa",null]);
+      break;
+    case "q9": if(!S.survey.q9) need.push(["#f_q9",null]); break;
+    case "q1": case "q2": case "q3": case "q6": case "q7": case "q8": case "q10":
+      if(!S.survey[st.id]) need.push([null,"Choose one answer."]); break;
+    case "q4": if(!S.survey.q4.length) need.push([null,"Choose at least one."]); break;
+    case "q5": if(!S.survey.q5.length) need.push([null,"Choose at least one."]); break;
+  }
+  return need;
+}
+
+/* ---------- navigation ---------- */
+let sending=false, result="";
+nextBtn.addEventListener("click", async ()=>{
+  const st = STEPS[i];
+  if(st.id==="welcome"){ i++; render(); return; }
+  if(st.id==="submit"){ return submit(); }
+  if(st.id==="thanks"){ return; }
+  collect();
+  const miss = missing();
+  if(miss.length){
+    main.querySelectorAll(".err").forEach(e=>e.classList.remove("err"));
+    const el = miss[0][0] ? main.querySelector(miss[0][0]) : null;
+    if(el){ fieldErr(el); } else { show(miss[0][1]||"Please complete this step"); }
+    if(el && miss[0][1]) show(miss[0][1]);
+    return;
+  }
+  if(st.id==="q10"){ i++; render(); return; }
+  i++; render();
+});
+backBtn.addEventListener("click", ()=>{ if(i>0){ i--; render(); } });
+
+/* ---------- submit ---------- */
+async function submit(){
+  sending=true; render();
+  const payload = Object.assign({}, S, {submittedAt:new Date().toISOString()});
+  try{
+    const r = await fetch("/api/submit",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});
+    const j = await r.json().catch(()=>({}));
+    result = (r.ok && j.ok) ? "ok" : "fail";
+  }catch(e){ result="fail"; }
+  sending=false;
+  if(result==="ok"){ S=blank(); try{localStorage.removeItem(KEY)}catch(e){} i=STEPS.length-1; render(); }
+  else { render(); show("Submission failed. Please try again."); }
+}
+
+render();
+window.addEventListener("beforeunload", e=>{ collectSafe(); });
+function collectSafe(){ try{ if(["center","other","help1","help2","contact","q9"].includes(STEPS[i].id)) collect(); }catch(e){} }
+</script>
+</body>
+</html>
