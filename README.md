@@ -15,3 +15,5 @@ Welcome → Your Center → Your System (features / parents / teachers / other) 
 How Can We Help? → Your Contact → Survey 1–10 → You're Done → Submit → Thank you.
 
 Answers are kept in `localStorage` (`icr.v1`) so nothing is lost when going Back or reloading.
+
+Live URL: https://islamic-center-registration.vercel.app
